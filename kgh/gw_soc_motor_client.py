@@ -7,7 +7,8 @@ servo_pin = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin, GPIO.OUT)
 pwm = GPIO.PWM(servo_pin, 50)
-pwm.start(3.0) 
+angle = 4.5
+pwm.start(angle) 
 
 import socket
 
@@ -25,7 +26,6 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
 
 try :
-	angle = 3.0
 	direction = 1
 	while True:
 		direction *= -1
@@ -48,19 +48,23 @@ try :
 			print('RAW:', tmp)
 			tmp_x = int(tmp[1])
 			#tmp.y = int(tmp[3])
-			if tmp_x < 700:
+			if tmp_x < 220:
 				direction = 1
 				print('Motor Right')
-			elif tmp_x > 1100:
+			elif tmp_x > 440:
 				direction = -1
 				print('Motor Left')
 			else:
 				direction = 0
 				print('Motor Hold')
 
-			angle = angle + (0.1 * direction)
-			pwm.ChangeDutyCycle(angle)
-			time.sleep(0.5)
+			if angle < 7.7 and angle > 3:
+				if direction != 0:
+					angle = angle + (0.1 * direction)
+					pwm.ChangeDutyCycle(angle)
+
+			print('Current Angle = ', angle)
+			time.sleep(2)
 	pwm.stop()
 	GPIO.cleanup()
 except:
