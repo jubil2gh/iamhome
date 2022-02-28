@@ -12,6 +12,7 @@ import os
 cur_dir = os.getcwd() + '\\'
 
 cap = cv2.VideoCapture(0)
+
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 record = False
 
