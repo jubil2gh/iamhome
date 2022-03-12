@@ -17,6 +17,7 @@ face_cascade = cv2.CascadeClassifier('./imported_model/haarcascade_frontalface_d
 app = Flask(__name__)
 
 # **********************{ Motor Ctrl }******************** #
+
 import pigpio
 servo_pin = 21
 global force_angle 
@@ -55,7 +56,13 @@ def change_cam_angle(pos):
         cur_angle -= delta
       pi.set_servo_pulsewidth(servo_pin, cur_angle)
       time.sleep(1)
-    
+""" 
+def zero_cam_angle():
+    print('zero cam angle')
+
+def change_cam_angle(pos):
+    print('change cam angel')
+"""
 # ********************** { End of Motor Ctrl } *********************
 zero_cam_angle()
 
@@ -64,6 +71,7 @@ camera.set(3, 640)
 camera.set(4, 480)
 
 def gen_frames():  # generate frame by frame from camera
+    global no_face_cnt
     while True:
         # Capture frame-by-frame
         success, frame = camera.read()  # read the camera frame
@@ -77,14 +85,13 @@ def gen_frames():  # generate frame by frame from camera
             num_of_face = len(faces)   
             print('Num of OBJ : ', num_of_face)
             if num_of_face == 0:
-                global no_face_cnt
                 no_face_cnt += 1
                 if no_face_cnt > 18000: # 10 hz * 1800 sec(30min)
                     zero_cam_angle()
 
             elif num_of_face == 1:
                 for x, y, w, h in faces:
-                    cv2.rectangle(img, (x,y), (x+w, y+h), (0,255,0),2)
+                    cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0),2)
                     print('OBJ POS : ', x, y)
                     if x:
                         # obj_center_x = int((x+w)-(w/2))
