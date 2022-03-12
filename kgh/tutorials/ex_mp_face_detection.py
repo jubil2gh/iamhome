@@ -11,6 +11,7 @@ import mediapipe as mp
 mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
+"""
 # For static images:
 IMAGE_FILES = []
 with mp_face_detection.FaceDetection(
@@ -30,9 +31,11 @@ with mp_face_detection.FaceDetection(
           detection, mp_face_detection.FaceKeyPoint.NOSE_TIP))
       mp_drawing.draw_detection(annotated_image, detection)
     cv2.imwrite('/tmp/annotated_image' + str(idx) + '.png', annotated_image)
-
+"""
 # For webcam input:
 cap = cv2.VideoCapture(0)
+cap.set(3,480)
+cap.set(4,320)
 with mp_face_detection.FaceDetection(
     model_selection=0, min_detection_confidence=0.5) as face_detection:
   while cap.isOpened():
@@ -44,6 +47,7 @@ with mp_face_detection.FaceDetection(
 
     # To improve performance, optionally mark the image as not writeable to
     # pass by reference.
+    image = cv2.flip(image, -1)
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = face_detection.process(image)
@@ -54,8 +58,9 @@ with mp_face_detection.FaceDetection(
     if results.detections:
       for detection in results.detections:
         mp_drawing.draw_detection(image, detection)
+        print(detection)
     # Flip the image horizontally for a selfie-view display.
-    cv2.imshow('MediaPipe Face Detection', cv2.flip(image, 1))
+    cv2.imshow('MediaPipe Face Detection', image)
     if cv2.waitKey(5) & 0xFF == 27:
       break
 cap.release()
